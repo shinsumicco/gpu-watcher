@@ -47,5 +47,5 @@ class ConfigParser:
             self.fp_gpu_db = os.path.join(os.path.dirname(self.fp_cfg), self.yaml["gpu_db"])
             self.fp_gpu_db = os.path.realpath(self.fp_gpu_db)
         except KeyError as e:
-            logger.info("Couldn't find the field {} in the config file. Use the default.".format(e))
+            logger.warning("Couldn't find the field {} in the config file. Use the default.".format(e))
         logger.info("The database path is set as '{}'.".format(self.fp_gpu_db))
