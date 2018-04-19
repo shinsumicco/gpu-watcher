@@ -11,7 +11,7 @@ ssh_cfg = namedtuple("ssh_cfg", ("host", "hostname", "user", "identity_file", "p
 
 
 class ConfigParser:
-    def __init__(self, fp_cfg):
+    def __init__(self, fp_cfg: str):
         # config file path
         self.fp_cfg = os.path.realpath(os.path.expanduser(fp_cfg))
 
