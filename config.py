@@ -37,7 +37,7 @@ class ConfigParser:
                 self.ssh_cfgs[cfg["Host"]] = \
                     ssh_cfg(cfg["Host"], cfg["HostName"], cfg["User"], cfg["IdentityFile"], cfg["Port"])
             except KeyError as e:
-                logger.fatal("Invalid config style: couldn't find the field '{}'. Will be terminated.".format(e))
+                logger.fatal("Couldn't find the field {} in the config file. Will be terminated.".format(e))
                 sys.exit(1)
 
         # sqlite3 database
