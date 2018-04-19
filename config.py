@@ -11,20 +11,20 @@ ssh_cfg = namedtuple("ssh_cfg", ("host", "hostname", "user", "identity_file", "p
 
 
 class ConfigParser:
-    def __init__(self, fp_config):
+    def __init__(self, fp_cfg):
         # config file path
-        self.fp_config = os.path.realpath(os.path.expanduser(fp_config))
+        self.fp_cfg = os.path.realpath(os.path.expanduser(fp_cfg))
 
         # check if the config file can be opened correctly
         try:
-            with open(self.fp_config, "r") as fin:
+            with open(self.fp_cfg, "r") as fin:
                 # check if the config file can be parsed as YAML
                 try:
                     self.yaml = yaml.load(fin)
                 except yaml.YAMLError as e:
-                    logger.fatal("Couldn't parse the config file '{}' as YAML.".format(self.fp_config))
+                    logger.fatal("Couldn't parse the config file '{}' as YAML.".format(self.fp_cfg))
                     sys.exit(1)
-                logger.info("The config file '{}' has been imported.".format(self.fp_config))
+                logger.info("The config file '{}' has been imported.".format(self.fp_cfg))
         except OSError as e:
             logger.fatal("Couldn't find the config file '{}'.".format(e.filename))
             sys.exit(1)
