@@ -39,3 +39,11 @@ class ConfigParser:
             except KeyError as e:
                 logger.fatal("Invalid config style: couldn't find the field '{}'. Will be terminated.".format(e))
                 sys.exit(1)
+
+        # sqlite3 database
+        self.fp_gpu_db = os.path.realpath(os.path.join(os.path.dirname(__file__), "gpu_database.sqlite3"))
+        try:
+            self.fp_gpu_db = os.path.join(os.path.dirname(self.fp_cfg), self.yaml["gpu_db"])
+            self.fp_gpu_db = os.path.realpath(self.fp_gpu_db)
+        except KeyError as e:
+            logger.info("Couldn't find the field {} in the config file. Use the default.".format(e))

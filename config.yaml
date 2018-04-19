@@ -10,3 +10,5 @@ ssh_cfgs:
   User: bar
   IdentityFile: /home/fuga/.ssh/fuga_rsa
   Port: 22
+
+gpu_db: ./gpu_database.sqlite3
