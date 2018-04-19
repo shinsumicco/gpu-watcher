@@ -39,6 +39,7 @@ class ConfigParser:
             except KeyError as e:
                 logger.fatal("Couldn't find the field {} in the config file. Will be terminated.".format(e))
                 sys.exit(1)
+        logger.info("Load the {} configuration(s) of the servers from the config file.".format(len(self.ssh_cfgs.keys())))
 
         # sqlite3 database
         self.fp_gpu_db = os.path.realpath(os.path.join(os.path.dirname(__file__), "gpu_database.sqlite3"))
@@ -47,3 +48,4 @@ class ConfigParser:
             self.fp_gpu_db = os.path.realpath(self.fp_gpu_db)
         except KeyError as e:
             logger.info("Couldn't find the field {} in the config file. Use the default.".format(e))
+        logger.info("The database path is set as '{}'.".format(self.fp_gpu_db))
