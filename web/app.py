@@ -28,8 +28,11 @@ class MainHandler(tornado.web.RequestHandler):
 
 class GPUStatusHandler(tornado.websocket.WebSocketHandler):
     def open(self):
-        logger.info("Connection is opened")
-        tornado.ioloop.IOLoop.current().add_timeout(time.time() + 1, self.send_gpu_status)
+        logger.info("Connection with {} is opened.".format(self.request.remote_ip))
+        tornado.ioloop.IOLoop.current().add_timeout(time.time() + 1, self.send_initial_data)
+
+    def on_close(self):
+        logger.info("Connection with {} is closed.".format(self.request.remote_ip))
 
     def on_message(self, message):
         pass
@@ -72,7 +75,7 @@ application = tornado.web.Application([
 
 if __name__ == "__main__":
     # format the logger output
-    logging.basicConfig(stream=sys.stdout, level=logging.INFO,
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
                         format="%(asctime)s: [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
 
     parser = argparse.ArgumentParser()
@@ -82,6 +85,7 @@ if __name__ == "__main__":
     # parse the config file
     cfg = config.ConfigParser(args.fp_config)
 
-    application.listen(8000)
-    logger.info("Server is up ...")
+    local_ip = 8000
+    application.listen(local_ip)
+    logger.info("Server is up on port {}.".format(local_ip))
     tornado.ioloop.IOLoop.current().start()
