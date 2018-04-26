@@ -4,11 +4,13 @@ ssh_cfgs:
   User: foo
   IdentityFile: /home/hoge/.ssh/hoge_rsa
   Port: 22
+  NumGPU: 2
 
 - Host: fuga
   HostName: fuga_address
   User: bar
   IdentityFile: /home/fuga/.ssh/fuga_rsa
   Port: 22
+  NumGPU: 4
 
 gpu_db: ./gpu_database.sqlite3

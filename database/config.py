@@ -7,7 +7,7 @@ from collections import namedtuple
 
 logger = logging.getLogger(__name__)
 
-ssh_cfg = namedtuple("ssh_cfg", ("host", "hostname", "user", "identity_file", "port"))
+ssh_cfg = namedtuple("ssh_cfg", ("host", "hostname", "user", "identity_file", "port", "num_gpu"))
 
 
 class ConfigParser:
@@ -35,7 +35,7 @@ class ConfigParser:
             # check if the keys of the dict are exist
             try:
                 self.ssh_cfgs[cfg["Host"]] = \
-                    ssh_cfg(cfg["Host"], cfg["HostName"], cfg["User"], cfg["IdentityFile"], cfg["Port"])
+                    ssh_cfg(cfg["Host"], cfg["HostName"], cfg["User"], cfg["IdentityFile"], cfg["Port"], cfg["NumGPU"])
             except KeyError as e:
                 logger.fatal("Couldn't find the field {} in the config file. Will be terminated.".format(e))
                 sys.exit(1)
