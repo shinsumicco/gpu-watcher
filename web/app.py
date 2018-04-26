@@ -3,9 +3,11 @@ import os
 import sys
 import json
 import time
-import random
+import sqlite3
 import logging
 import argparse
+from contextlib import closing
+from datetime import datetime, timedelta
 
 import tornado.autoreload
 import tornado.ioloop
@@ -14,6 +16,7 @@ import tornado.websocket
 
 sys.path.append(os.pardir)
 from database import config
+from database import gpu_database
 
 logger = logging.getLogger(__name__)
 
@@ -28,10 +31,12 @@ class MainHandler(tornado.web.RequestHandler):
 
 class GPUStatusHandler(tornado.websocket.WebSocketHandler):
     def open(self):
+        self.payload_cache = {}
         logger.info("Connection with {} is opened.".format(self.request.remote_ip))
         tornado.ioloop.IOLoop.current().add_timeout(time.time() + 1, self.send_initial_data)
 
     def on_close(self):
+        self.payload_cache = {}
         logger.info("Connection with {} is closed.".format(self.request.remote_ip))
 
     def on_message(self, message):
@@ -53,17 +58,46 @@ class GPUStatusHandler(tornado.websocket.WebSocketHandler):
         )
 
     def send_gpu_status(self):
-        self.write_message(
-            json.dumps(
-                {
-                    "Minerva": {
-                        "1": {"u": 15 + random.randint(1, 20), "m": 76 + random.randint(1, 20)},
-                        "2": {"u": 48 + random.randint(1, 20), "m": 23 + random.randint(1, 20)}
-                    }
-                }
-            )
-        )
+        payload = self.create_latest_payload()
+
+        # check if the payload is updated or not
+        if self.payload_cache == payload:
+            logger.debug("Not updated.")
+        else:
+            self.payload_cache = payload
+            self.write_message(json.dumps(payload))
+            logger.debug("{}".format(payload))
+
         tornado.ioloop.IOLoop.current().add_timeout(time.time() + 1, self.send_gpu_status)
+
+    def create_latest_payload(self):
+        # create records for each server
+        payload = {"status": "latest"}
+        # acquire the database
+        with closing(sqlite3.connect(cfg.fp_gpu_db)) as gpu_db:
+            # acquire the cursor
+            cursor = gpu_db.cursor()
+            for ssh_cfg in cfg.ssh_cfgs.values():
+                # acquire the latest GPU status
+                acquire = "SELECT * FROM {} " \
+                          "ORDER BY local_time_stamp DESC LIMIT {}".format(ssh_cfg.host, ssh_cfg.num_gpu)
+                cursor.execute(acquire)
+                rows = cursor.fetchall()
+                # create a payload
+                payload[ssh_cfg.host] = {}
+                for row in rows:
+                    gpu_info = gpu_database.gpu_info_parser(row)
+                    if gpu_info.gpu_index not in payload[ssh_cfg.host].keys():
+                        payload[ssh_cfg.host][gpu_info.gpu_index] = {}
+                    payload[ssh_cfg.host][gpu_info.gpu_index]["gpu_name"] = gpu_info.gpu_name
+                    payload[ssh_cfg.host][gpu_info.gpu_index]["memory_free"] = gpu_info.memory_free
+                    payload[ssh_cfg.host][gpu_info.gpu_index]["memory_used"] = gpu_info.memory_used
+                    payload[ssh_cfg.host][gpu_info.gpu_index]["memory_total"] = gpu_info.memory_total
+                    payload[ssh_cfg.host][gpu_info.gpu_index]["utilization_gpu"] = gpu_info.utilization_gpu
+                    payload[ssh_cfg.host][gpu_info.gpu_index]["utilization_memory"] = gpu_info.utilization_memory
+                    payload[ssh_cfg.host][gpu_info.gpu_index]["time_stamp"] = gpu_info.local_time_stamp
+
+        return payload
 
 
 application = tornado.web.Application([
