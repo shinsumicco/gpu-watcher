@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hello, world</title>
+  <link rel="stylesheet" href="{{ static_url("style.css") }}"/>
+
+  <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js" charset="utf-8"></script>
+
+  <link href="{{ static_url("nv.d3.min.css") }}" rel="stylesheet" type="text/css">
+  <script src="{{ static_url("nv.d3.min.js") }}"></script>
+
+  <script src="{{ static_url("gpu_watcher.js") }}"></script>
+</head>
+<body onload="init();">
+  <div id="container">
+    <div id="main">
+      <div id="chart1"></div>
+    </div>
+  </div>
+</body>
+</html>
