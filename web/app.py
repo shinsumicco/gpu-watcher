@@ -46,16 +46,45 @@ class GPUStatusHandler(tornado.websocket.WebSocketHandler):
         pass
 
     def send_initial_data(self):
-        self.write_message(
-            json.dumps(
-                {
-                    "Minerva": {
-                        "1": {"u": [*range(60)], "m": [*range(60)]},
-                        "2": {"u": [*range(60)], "m": [*range(60)]}
-                    }
-                }
-            )
-        )
+        # calc the reference timestamp
+        reference_time_stamp = (datetime.now() - timedelta(hours=1)).strftime('%s')
+        # create records for each server
+        payload = {"status": "initial"}
+        # acquire the database
+        with closing(sqlite3.connect(cfg.fp_gpu_db)) as gpu_db:
+            # acquire the cursor
+            cursor = gpu_db.cursor()
+            for ssh_cfg in cfg.ssh_cfgs.values():
+                # acquire the latest GPU status
+                acquire = "SELECT * FROM {} WHERE {} <= local_time_stamp".format(ssh_cfg.host, reference_time_stamp)
+                cursor.execute(acquire)
+                rows = cursor.fetchall()
+                # create a payload
+                payload[ssh_cfg.host] = {}
+                for row in rows:
+                    gpu_info = gpu_database.gpu_info_parser(row)
+                    if gpu_info.gpu_index not in payload[ssh_cfg.host].keys():
+                        payload[ssh_cfg.host][gpu_info.gpu_index] = {}
+                        payload[ssh_cfg.host][gpu_info.gpu_index]["gpu_name"] = gpu_info.gpu_name
+                        payload[ssh_cfg.host][gpu_info.gpu_index]["memory_free"] = []
+                        payload[ssh_cfg.host][gpu_info.gpu_index]["memory_used"] = []
+                        payload[ssh_cfg.host][gpu_info.gpu_index]["memory_total"] = []
+                        payload[ssh_cfg.host][gpu_info.gpu_index]["utilization_gpu"] = []
+                        payload[ssh_cfg.host][gpu_info.gpu_index]["utilization_memory"] = []
+                        payload[ssh_cfg.host][gpu_info.gpu_index]["time_stamp"] = []
+                    payload[ssh_cfg.host][gpu_info.gpu_index]["memory_free"].append(gpu_info.memory_free)
+                    payload[ssh_cfg.host][gpu_info.gpu_index]["memory_used"].append(gpu_info.memory_used)
+                    payload[ssh_cfg.host][gpu_info.gpu_index]["memory_total"].append(gpu_info.memory_total)
+                    payload[ssh_cfg.host][gpu_info.gpu_index]["utilization_gpu"].append(gpu_info.utilization_gpu)
+                    payload[ssh_cfg.host][gpu_info.gpu_index]["utilization_memory"].append(gpu_info.utilization_memory)
+                    payload[ssh_cfg.host][gpu_info.gpu_index]["time_stamp"].append(gpu_info.local_time_stamp)
+
+        self.write_message(json.dumps(payload))
+        logger.debug(payload)
+
+        self.payload_cache = self.create_latest_payload()
+
+        tornado.ioloop.IOLoop.current().add_timeout(time.time() + 1, self.send_gpu_status)
 
     def send_gpu_status(self):
         payload = self.create_latest_payload()
