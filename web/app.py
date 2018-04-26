@@ -4,6 +4,8 @@ import sys
 import json
 import time
 import random
+import logging
+import argparse
 
 import tornado.autoreload
 import tornado.ioloop
@@ -12,6 +14,8 @@ import tornado.websocket
 
 sys.path.append(os.pardir)
 from database import config
+
+logger = logging.getLogger(__name__)
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -24,7 +28,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 class GPUStatusHandler(tornado.websocket.WebSocketHandler):
     def open(self):
-        # self.send_initial_data()
+        logger.info("Connection is opened")
         tornado.ioloop.IOLoop.current().add_timeout(time.time() + 1, self.send_gpu_status)
 
     def on_message(self, message):
@@ -67,6 +71,10 @@ application = tornado.web.Application([
 )
 
 if __name__ == "__main__":
+    # format the logger output
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO,
+                        format="%(asctime)s: [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+
     parser = argparse.ArgumentParser()
     parser.add_argument(help="config file path (config.yaml)", dest="fp_config", type=str)
     args = parser.parse_args()
@@ -75,5 +83,5 @@ if __name__ == "__main__":
     cfg = config.ConfigParser(args.fp_config)
 
     application.listen(8000)
-    print("Server is up ...")
+    logger.info("Server is up ...")
     tornado.ioloop.IOLoop.current().start()
