@@ -10,6 +10,10 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 
+sys.path.append(os.pardir)
+from database import config
+
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.render("index.html")
@@ -63,6 +67,13 @@ application = tornado.web.Application([
 )
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(help="config file path (config.yaml)", dest="fp_config", type=str)
+    args = parser.parse_args()
+
+    # parse the config file
+    cfg = config.ConfigParser(args.fp_config)
+
     application.listen(8000)
     print("Server is up ...")
     tornado.ioloop.IOLoop.current().start()
