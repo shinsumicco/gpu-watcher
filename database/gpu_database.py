@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import sys
 import sqlite3
 import logging
@@ -8,7 +9,8 @@ from contextlib import closing
 from collections import namedtuple
 from datetime import datetime as dt
 
-import config
+sys.path.append(os.pardir)
+from database import config
 
 logger = logging.getLogger(__name__)
 logging.getLogger("paramiko").setLevel(logging.WARNING)
