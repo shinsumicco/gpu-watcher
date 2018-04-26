@@ -118,8 +118,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # parse the config file
-    config = config.ConfigParser(args.fp_config)
+    cfg = config.ConfigParser(args.fp_config)
 
     # refresh the database
-    database = Database(config)
+    database = Database(cfg)
     database.refresh()
