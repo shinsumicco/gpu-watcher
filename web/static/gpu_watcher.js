@@ -98,7 +98,7 @@ function update_graph(data){
             );
 
             chart_data[hostname][gpu_index]["memory"].values.shift();
-            chart_data[hostname][gpu_index["memory"].values.push(
+            chart_data[hostname][gpu_index]["memory"].values.push(
                 {
                     x: data[hostname][gpu_index]["time_stamp"] * 1000,
                     y: data[hostname][gpu_index]["utilization_memory"]
