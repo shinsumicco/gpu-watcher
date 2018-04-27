@@ -18,16 +18,13 @@
 </head>
 <body>
   <div id="main">
-    <div id="{{hosts[0]}}" class="server">
-      <h2>{{hosts[0]}}</h2>
+    {%for host in hosts%}
+    <div id="{{host}}" class="server">
+      <h2>{{host}}</h2>
       <div class="util"></div>
       <div class="memory"></div>
     </div>
-    <div id="{{hosts[1]}}" class="server">
-      <h2>{{hosts[1]}}</h2>
-      <div class="util"></div>
-      <div class="memory"></div>
-    </div>
+    {%end%}
   </div>
 </body>
 </html>
