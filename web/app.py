@@ -30,6 +30,9 @@ class MainHandler(tornado.web.RequestHandler):
 
 
 class GPUStatusHandler(tornado.websocket.WebSocketHandler):
+    def check_origin(self, origin):
+        return True
+
     def open(self):
         self.payload_cache = {}
         logger.info("Connection with {} is opened.".format(self.request.remote_ip))
