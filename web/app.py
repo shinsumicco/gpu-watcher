@@ -62,7 +62,7 @@ class GPUStatusHandler(tornado.websocket.WebSocketHandler):
                 # create a payload
                 payload[ssh_cfg.host] = {}
                 for row in rows:
-                    gpu_info = gpu_database.gpu_info_parser(row)
+                    gpu_info = gpu_database.gpu_info(*row)
                     if gpu_info.gpu_index not in payload[ssh_cfg.host].keys():
                         payload[ssh_cfg.host][gpu_info.gpu_index] = {}
                         payload[ssh_cfg.host][gpu_info.gpu_index]["gpu_name"] = gpu_info.gpu_name
@@ -115,7 +115,7 @@ class GPUStatusHandler(tornado.websocket.WebSocketHandler):
                 # create a payload
                 payload[ssh_cfg.host] = {}
                 for row in rows:
-                    gpu_info = gpu_database.gpu_info_parser(row)
+                    gpu_info = gpu_database.gpu_info(*row)
                     if gpu_info.gpu_index not in payload[ssh_cfg.host].keys():
                         payload[ssh_cfg.host][gpu_info.gpu_index] = {}
                     payload[ssh_cfg.host][gpu_info.gpu_index]["gpu_name"] = gpu_info.gpu_name

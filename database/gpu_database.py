@@ -21,10 +21,6 @@ gpu_info = namedtuple("gpu_info", ("gpu_index", "gpu_name",
                                    "remote_time_stamp", "local_time_stamp"))
 
 
-def gpu_info_parser(row):
-    return gpu_info(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
-
-
 class Database:
     def __init__(self, cfg: config.ConfigParser):
         self.cfg = cfg
