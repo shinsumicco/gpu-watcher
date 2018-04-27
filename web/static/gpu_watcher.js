@@ -5,7 +5,7 @@ var chart_data = {};
 // last 2 are dummy (for now)
 var color_set = ["#00ff00", "#ff007f", "#ffa500", "#ffa500"];
 
-var socket = new WebSocket('ws://localhost:8000/gpu_status');
+var socket = new WebSocket('ws://' + server_location + '/gpu_status');
 socket.onopen = function(event){
     console.log("connected");
 }
@@ -47,7 +47,7 @@ function draw_initial(data){
 
             chart_data[hostname]["memory"].push(
                 {
-                    values: values_u,
+                    values: values_m,
                     key: data[hostname][gpu_index]["gpu_name"] + "(" + gpu_index + ")",
                     color: color_set[gpu_index]
                 }

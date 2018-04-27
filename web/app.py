@@ -23,7 +23,14 @@ logger = logging.getLogger(__name__)
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("index.html")
+        hosts = []
+        for ssh_cfg in cfg.ssh_cfgs.values():
+            hosts.append(ssh_cfg.host)
+        self.render(
+            "index.html",
+            hosts=hosts,
+            bind_ip_port=bind_ip_port
+        )
 
     def data_received(self, chunk):
         pass
@@ -155,12 +162,19 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument(help="config file path (config.yaml)", dest="fp_config", type=str)
+    parser.add_argument("--bind_ip", "-b", help="ip address which will be embedded in index.html", dest="bind_ip", type=str, default="localhost")
     args = parser.parse_args()
 
     # parse the config file
     cfg = config.ConfigParser(args.fp_config)
 
-    local_ip = 8000
-    application.listen(local_ip)
-    logger.info("Server is up on port {}.".format(local_ip))
+    bind_ip = args.bind_ip
+    logger.info("Server is at: {}.".format(bind_ip))
+
+    local_port = 8000
+    application.listen(local_port)
+
+    bind_ip_port = "{0}:{1}".format(bind_ip, local_port)
+
+    logger.info("Server is up on port {}.".format(local_port))
     tornado.ioloop.IOLoop.current().start()

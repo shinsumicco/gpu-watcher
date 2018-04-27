@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Hello, world</title>
+  <title>GPU Watcher</title>
   <link rel="stylesheet" href="{{ static_url("style.css") }}"/>
 
   <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
@@ -10,15 +10,21 @@
   <link href="{{ static_url("nv.d3.min.css") }}" rel="stylesheet" type="text/css">
   <script src="{{ static_url("nv.d3.min.js") }}"></script>
 
+  <script type="text/javascript">
+    server_location = "{{bind_ip_port}}";
+  </script>
+
   <script src="{{ static_url("gpu_watcher.js") }}"></script>
 </head>
 <body>
   <div id="main">
-    <div id="luna" class="server">
+    <div id="{{hosts[0]}}" class="server">
+      <h2>{{hosts[0]}}</h2>
       <div class="util"></div>
       <div class="memory"></div>
     </div>
-    <div id="venus" class="server">
+    <div id="{{hosts[1]}}" class="server">
+      <h2>{{hosts[1]}}</h2>
       <div class="util"></div>
       <div class="memory"></div>
     </div>
