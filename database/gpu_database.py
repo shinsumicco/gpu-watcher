@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+import time
 import sqlite3
 import logging
 import paramiko
@@ -9,8 +10,8 @@ from contextlib import closing
 from collections import namedtuple
 from datetime import datetime as dt
 
-sys.path.append(os.pardir)
-from database import config
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+import config
 
 logger = logging.getLogger(__name__)
 logging.getLogger("paramiko").setLevel(logging.WARNING)
@@ -107,13 +108,33 @@ class Database:
         return current_statuses
 
 
+def main():
+    while True:
+        database.refresh()
+        time.sleep(5)
+
+
+def fork():
+    pid = os.fork()
+    if pid > 0:
+        pid_file = open("/var/run/gpu-database.pid", "w")
+        pid_file.write(str(pid) + "\n")
+        pid_file.close()
+        sys.exit()
+    if pid == 0:
+        main()
+
+
 if __name__ == "__main__":
     # format the logger output
-    logging.basicConfig(stream=sys.stdout, level=logging.INFO,
-                        format="%(asctime)s: [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+    logging.basicConfig(filename=os.path.join(os.path.dirname(os.path.abspath(__file__)), "gpu_database.log"),
+                        level=logging.INFO,
+                        format="%(asctime)s: [%(levelname)s] %(message)s",
+                        datefmt="%Y-%m-%d %H:%M:%S")
 
     parser = argparse.ArgumentParser()
-    parser.add_argument(help="config file path (config.yaml)", dest="fp_config", type=str)
+    parser.add_argument(dest="fp_config", help="config file path (config.yaml)", type=str)
+    parser.add_argument("--daemon", dest="daemon", help="run as a daemon", action="store_true")
     args = parser.parse_args()
 
     # parse the config file
@@ -121,4 +142,13 @@ if __name__ == "__main__":
 
     # refresh the database
     database = Database(cfg)
-    database.refresh()
+
+    if args.daemon:
+        # daemonize the process
+        if os.getuid() != 0:
+            sys.stderr.write("Running as daemon process needs sudo!\n")
+            exit(1)
+        fork()
+    else:
+        # while loop
+        main()
