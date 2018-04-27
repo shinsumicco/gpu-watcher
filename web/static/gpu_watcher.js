@@ -76,8 +76,6 @@ function init_graph(hostname, monitor_type){
         c.yAxis.axisLabel(y_label);
         c.yAxis.tickFormat(d3.format('d'));
 
-        console.log("trying to add graph to: " + "#" + hostname + "." + monitor_type);
-
         d3.select("#" + hostname).select("." + monitor_type).append('svg')
         .datum(chart_data[hostname][monitor_type])
         .call(c);
