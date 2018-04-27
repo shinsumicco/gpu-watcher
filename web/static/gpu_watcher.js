@@ -34,7 +34,7 @@ function draw_initial(data){
             var values_m = [];
             for (var i = 0; i < data[hostname][gpu_index]["time_stamp"].length; i++){
                 values_u.push({x: data[hostname][gpu_index]["time_stamp"][i] * 1000, y: data[hostname][gpu_index]["utilization_gpu"][i]});
-                values_m.push({x: data[hostname][gpu_index]["time_stamp"][i] * 1000, y: data[hostname][gpu_index]["utilization_memory"][i]});
+                values_m.push({x: data[hostname][gpu_index]["time_stamp"][i] * 1000, y: 100 * data[hostname][gpu_index]["memory_used"][i]/data[hostname][gpu_index]["memory_total"][i]});
             }
 
             chart_data[hostname]["util"].push(
@@ -71,7 +71,7 @@ function init_graph(hostname, monitor_type){
         }).showMaxMin(false);
         c.xAxis.rotateLabels(-10);
 
-        var y_label = monitor_type=="util"?"GPU Utilization (%)":"Memory Utilization (%)";
+        var y_label = monitor_type=="util"?"GPU Utilization (%)":"Memory Consumption (%)";
         c.yAxis.axisLabel(y_label);
         c.yAxis.tickFormat(d3.format('d'));
 
@@ -101,12 +101,11 @@ function update_graph(data){
             chart_data[hostname]["memory"][gpu_index].values.push(
                 {
                     x: data[hostname][gpu_index]["time_stamp"] * 1000,
-                    y: data[hostname][gpu_index]["utilization_memory"]
+                    y: 100 * data[hostname][gpu_index]["memory_used"] / data[hostname][gpu_index]["memory_total"]
                 }
             );
-
-            chart[hostname]["util"].update();
-            chart[hostname]["memory"].update();
         }
+        chart[hostname]["util"].update();
+        chart[hostname]["memory"].update();
     }
 }
