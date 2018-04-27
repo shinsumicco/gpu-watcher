@@ -10,8 +10,8 @@ from contextlib import closing
 from collections import namedtuple
 from datetime import datetime as dt
 
-sys.path.append(os.pardir)
-from database import config
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+import config
 
 logger = logging.getLogger(__name__)
 logging.getLogger("paramiko").setLevel(logging.WARNING)
