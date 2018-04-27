@@ -89,16 +89,16 @@ function init_graph(hostname, monitor_type){
 function update_graph(data){
     for (hostname in data){
         for (gpu_index in data[hostname]){
-            chart_data[hostname][gpu_index]["util"].values.shift();
-            chart_data[hostname][gpu_index]["util"].values.push(
+            chart_data[hostname]["util"][gpu_index].values.shift();
+            chart_data[hostname]["util"][gpu_index].values.push(
                 {
                     x: data[hostname][gpu_index]["time_stamp"] * 1000,
                     y: data[hostname][gpu_index]["utilization_gpu"]
                 }
             );
 
-            chart_data[hostname][gpu_index]["memory"].values.shift();
-            chart_data[hostname][gpu_index]["memory"].values.push(
+            chart_data[hostname]["memory"][gpu_index].values.shift();
+            chart_data[hostname]["memory"][gpu_index].values.push(
                 {
                     x: data[hostname][gpu_index]["time_stamp"] * 1000,
                     y: data[hostname][gpu_index]["utilization_memory"]
