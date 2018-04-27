@@ -56,11 +56,12 @@ class Database:
                         cursor.execute(insert, list(current_status))
                         gpu_db.commit()
 
-                # count the number of recods for each server
-                count = "SELECT COUNT(*) from {}".format(ssh_cfg.host)
-                cursor.execute(count)
-                num = cursor.fetchall()[0][0]
-                logger.debug("The table for {} has {} records.".format(ssh_cfg.host, num))
+                # count the number of records for each server
+                if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
+                    count = "SELECT COUNT(*) from {}".format(ssh_cfg.host)
+                    cursor.execute(count)
+                    num = cursor.fetchall()[0][0]
+                    logger.debug("The table for {} has {} records.".format(ssh_cfg.host, num))
 
     def __nvidia_smi(self, ssh_cfg: config.ssh_cfg):
         logger.info("Connect to {} ({}).".format(ssh_cfg.hostname, ssh_cfg.host))
