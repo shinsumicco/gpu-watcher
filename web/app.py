@@ -145,6 +145,7 @@ application = tornado.web.Application([
     (r"/gpu_status", GPUStatusHandler)],
     template_path=os.path.join(os.getcwd(), "templates"),
     static_path=os.path.join(os.getcwd(), "static"),
+    debug=True
 )
 
 if __name__ == "__main__":
