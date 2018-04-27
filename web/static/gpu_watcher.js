@@ -90,7 +90,7 @@ function update_graph(data){
     for (hostname in data){
         for (gpu_index in data[hostname]){
             chart_data[hostname][gpu_index]["util"].values.shift();
-            chart_data[hostname][gpu_index["util"].values.push(
+            chart_data[hostname][gpu_index]["util"].values.push(
                 {
                     x: data[hostname][gpu_index]["time_stamp"] * 1000,
                     y: data[hostname][gpu_index]["utilization_gpu"]
