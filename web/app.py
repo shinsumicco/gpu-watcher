@@ -156,8 +156,8 @@ class GPUStatusHandler(tornado.websocket.WebSocketHandler):
 application = tornado.web.Application([
     (r"/", MainHandler),
     (r"/gpu_status", GPUStatusHandler)],
-    template_path=os.path.join(os.getcwd(), "templates"),
-    static_path=os.path.join(os.getcwd(), "static"),
+    template_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates"),
+    static_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), "static"),
     debug=True
 )
 
