@@ -14,7 +14,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 
-sys.path.append(os.pardir)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from database import config
 from database import gpu_database
 
@@ -94,7 +94,10 @@ class GPUStatusHandler(tornado.websocket.WebSocketHandler):
 
         payload = {"status": "initial", "data": payload_data}
 
-        self.write_message(json.dumps(payload))
+        try:
+            self.write_message(json.dumps(payload))
+        except tornado.websocket.WebSocketClosedError:
+            pass
         logger.debug(payload)
 
         # cache the payload in order to check if the last record is updated or not
@@ -110,7 +113,10 @@ class GPUStatusHandler(tornado.websocket.WebSocketHandler):
             logger.debug("Not updated.")
         else:
             self.payload_cache = payload
-            self.write_message(json.dumps(payload))
+            try:
+                self.write_message(json.dumps(payload))
+            except tornado.websocket.WebSocketClosedError:
+                pass
             logger.debug("{}".format(payload))
 
         tornado.ioloop.IOLoop.current().add_timeout(time.time() + 1, self.send_gpu_status)
@@ -150,14 +156,14 @@ class GPUStatusHandler(tornado.websocket.WebSocketHandler):
 application = tornado.web.Application([
     (r"/", MainHandler),
     (r"/gpu_status", GPUStatusHandler)],
-    template_path=os.path.join(os.getcwd(), "templates"),
-    static_path=os.path.join(os.getcwd(), "static"),
+    template_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates"),
+    static_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), "static"),
     debug=True
 )
 
 if __name__ == "__main__":
     # format the logger output
-    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                         format="%(asctime)s: [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
 
     parser = argparse.ArgumentParser()
