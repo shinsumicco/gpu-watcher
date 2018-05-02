@@ -9,6 +9,7 @@ import argparse
 from contextlib import closing
 from collections import namedtuple
 from datetime import datetime as dt
+from datetime import timedelta
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import config
@@ -55,7 +56,15 @@ class Database:
                              "remote_time_stamp, local_time_stamp) VALUES (?,?,?,?,?,?,?,?,?)".format(ssh_cfg.host)
                     for current_status in current_statuses:
                         cursor.execute(insert, list(current_status))
-                        gpu_db.commit()
+
+                # delete the old records
+                delete = "DELETE FROM {} " \
+                         "WHERE local_time_stamp <= ?".format(ssh_cfg.host)
+                outdated_time_stamp = (dt.now() - timedelta(days=7)).strftime('%s')
+                cursor.execute(delete, [outdated_time_stamp])
+
+                # commit the database
+                gpu_db.commit()
 
                 # count the number of records for each server
                 if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
