@@ -94,7 +94,10 @@ class GPUStatusHandler(tornado.websocket.WebSocketHandler):
 
         payload = {"status": "initial", "data": payload_data}
 
-        self.write_message(json.dumps(payload))
+        try:
+            self.write_message(json.dumps(payload))
+        except tornado.websocket.WebSocketClosedError:
+            pass
         logger.debug(payload)
 
         # cache the payload in order to check if the last record is updated or not
@@ -110,7 +113,10 @@ class GPUStatusHandler(tornado.websocket.WebSocketHandler):
             logger.debug("Not updated.")
         else:
             self.payload_cache = payload
-            self.write_message(json.dumps(payload))
+            try:
+                self.write_message(json.dumps(payload))
+            except tornado.websocket.WebSocketClosedError:
+                pass
             logger.debug("{}".format(payload))
 
         tornado.ioloop.IOLoop.current().add_timeout(time.time() + 1, self.send_gpu_status)
