@@ -14,7 +14,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 
-sys.path.append(os.pardir)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from database import config
 from database import gpu_database
 
