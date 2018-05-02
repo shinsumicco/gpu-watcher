@@ -157,7 +157,7 @@ application = tornado.web.Application([
 
 if __name__ == "__main__":
     # format the logger output
-    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                         format="%(asctime)s: [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
 
     parser = argparse.ArgumentParser()
