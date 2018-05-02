@@ -20,7 +20,9 @@
   <div id="main">
     {%for host in hosts%}
     <div id="{{host}}" class="server">
-      <h2>{{host}}</h2>
+      <div class="hostname">
+        <h2>{{host}}</h2>
+      </div>
       <div class="util"></div>
       <div class="memory"></div>
     </div>
