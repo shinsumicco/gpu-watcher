@@ -2,6 +2,8 @@
 var chart = {};
 var chart_data = {};
 
+var data_limit = 300;
+
 // last 2 are dummy (for now)
 var color_set = ["#00ff00", "#ff007f", "#ffa500", "#ffa500"];
 
@@ -99,7 +101,9 @@ function init_graph(hostname, monitor_type){
 function update_graph(data){
     for (hostname in data){
         for (gpu_index in data[hostname]){
-            chart_data[hostname]["util"][gpu_index].values.shift();
+            if (chart_data[hostname]["util"][gpu_index].values.length >= data_limit){
+                chart_data[hostname]["util"][gpu_index].values.shift();
+            }
             chart_data[hostname]["util"][gpu_index].values.push(
                 {
                     x: data[hostname][gpu_index]["time_stamp"] * 1000,
@@ -107,7 +111,9 @@ function update_graph(data){
                 }
             );
 
-            chart_data[hostname]["memory"][gpu_index].values.shift();
+            if (chart_data[hostname]["memory"][gpu_index].values.length >= data_limit){
+                chart_data[hostname]["memory"][gpu_index].values.shift();
+            }
             chart_data[hostname]["memory"][gpu_index].values.push(
                 {
                     x: data[hostname][gpu_index]["time_stamp"] * 1000,
