@@ -8,10 +8,20 @@ html, body, svg {
     width: 100%;
 }
 
+#header{
+    margin: 0px;
+    padding: 0px;
+    height: 24px;
+    width: 100%;
+    background-color: #222222;
+    color: #dddddd;
+    text-align: center;
+}
+
 #main{
     margin: 0px;
     padding: 0px;
-    height: 100%;
+    height: calc( 100% - 24px );
     width: 100%;
 
     display: flex;

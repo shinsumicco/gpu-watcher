@@ -15,6 +15,7 @@ socket.onclose = function(){
     console.log("disconnected");
 }
 socket.onmessage = function(event){
+    document.getElementById("header").innerText = "latest sync: " + (new Date()).toString();
     var gpu_status_data =JSON.parse(event.data);
     if (gpu_status_data["status"] == "initial"){
         draw_initial(gpu_status_data["data"]);
