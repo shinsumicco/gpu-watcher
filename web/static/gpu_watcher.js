@@ -52,7 +52,7 @@ function draw_initial(data){
             chart_data[hostname]["util"].push(
                 {
                     values: values_u,
-                    key: data[hostname][gpu_index]["gpu_name"].replace("GeForce ", "") + "(" + gpu_index + ")",
+                    key: data[hostname][gpu_index]["gpu_name"].replace("GeForce ", "") + " (" + gpu_index + ")",
                     color: color_set[gpu_index]
                 }
             );
@@ -60,7 +60,7 @@ function draw_initial(data){
             chart_data[hostname]["memory"].push(
                 {
                     values: values_m,
-                    key: data[hostname][gpu_index]["gpu_name"].replace("GeForce ", "") + "(" + gpu_index + ")",
+                    key: data[hostname][gpu_index]["gpu_name"].replace("GeForce ", "") + " (" + gpu_index + ")",
                     color: color_set[gpu_index]
                 }
             );
