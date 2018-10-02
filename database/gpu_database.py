@@ -88,12 +88,14 @@ class Database:
             # connect to the server
             ssh.connect(ssh_cfg.hostname, username=ssh_cfg.user, port=ssh_cfg.port, pkey=pkey, timeout=10.0)
 
+            logger.debug("Connection established with {} ({})".format(ssh_cfg.hostname, ssh_cfg.host))
+
             # execute nvidia-smi
             _, stdout, _ = ssh.exec_command("nvidia-smi "
                                             "--query-gpu=index,gpu_name,"
                                             "memory.free,memory.used,memory.total,"
                                             "utilization.gpu,utilization.memory,timestamp "
-                                            "--format=csv,noheader,nounits")
+                                            "--format=csv,noheader,nounits", timeout=10.0)
 
             # parse the output
             rets = str(stdout.read())[2:-3].split("\\n")
@@ -109,6 +111,10 @@ class Database:
                 current_statuses.append(status)
         except paramiko.SSHException as e:
             logger.fatal("Couldn't create a SSH session with {} ({}). {}".format(ssh_cfg.hostname, ssh_cfg.host, e.args[0]))
+            current_statuses = None
+        # except paramiko.ssh_exception.NoValidConnectionsError as e: # will cause when target host is down.
+        except Exception as e:
+            logger.fatal("Exception when communicating with  {} ({}). type(e): {}".format(ssh_cfg.hostname, ssh_cfg.host, type(e)))
             current_statuses = None
         finally:
             # disconnect the ssh session
